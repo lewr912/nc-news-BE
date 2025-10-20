@@ -24,14 +24,14 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     .then(() => {
       return db.query(`CREATE TABLE users(
         username VARCHAR(30) NOT NULL PRIMARY KEY,
-        name VARCHAR(60) NOT NULL,
+        name VARCHAR NOT NULL,
         avatar_url VARCHAR(1000)
         );`);
     })
     .then(() => {
       return db.query(`CREATE TABLE articles(
         article_id SERIAL PRIMARY KEY,
-        title VARCHAR(60) NOT NULL,
+        title VARCHAR NOT NULL,
         topic VARCHAR(20) NOT NULL references topics(slug),
         author VARCHAR(30) NOT NULL references users(username),
         body TEXT,
@@ -103,6 +103,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         return convertTimestampToDate(comment)
       })
       const formattedComments = commentDatesFormatted.map((comment) => {
+        //console.log(articlesLookup[comment.article_title])
       return [articlesLookup[comment.article_title], comment.body, comment.votes, comment.author, comment.created_at]
     });
     //console.log(formattedComments)
