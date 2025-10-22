@@ -51,11 +51,9 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         );`);
     })
     .then(() => {
-      const formattedTopics = topicData.map(
-        (topic) => {
-          return [topic.slug, topic.description, topic.img_url];
-        }
-      );
+      const formattedTopics = topicData.map((topic) => {
+        return [topic.slug, topic.description, topic.img_url];
+      });
       const sqlTopics = format(
         `INSERT INTO topics(slug, description, img_url) VALUES %L`,
         formattedTopics
@@ -76,19 +74,17 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       const articleDatesFormatted = articleData.map((article) => {
         return convertTimestampToDate(article);
       });
-      const formattedArticles = articleDatesFormatted.map(
-        (article) => {
-          return [
-            article.title,
-            article.topic,
-            article.author,
-            article.body,
-            article.created_at,
-            article.votes,
-            article.article_img_url,
-          ];
-        }
-      );
+      const formattedArticles = articleDatesFormatted.map((article) => {
+        return [
+          article.title,
+          article.topic,
+          article.author,
+          article.body,
+          article.created_at,
+          article.votes,
+          article.article_img_url,
+        ];
+      });
       const sqlArticles = format(
         `INSERT INTO articles(title, topic, author, body, created_at, votes, article_img_url) VALUES %L RETURNING * `,
         formattedArticles
@@ -96,21 +92,29 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return db.query(sqlArticles);
     })
     .then((articleTable) => {
-      // console.log(articleTable.rows)
-      const articlesLookup = createLookupObj(articleTable.rows, "title", "article_id");
-      //console.log(articlesLookup)
+      const articlesLookup = createLookupObj(
+        articleTable.rows,
+        "title",
+        "article_id"
+      );
       const commentDatesFormatted = commentData.map((comment) => {
-        return convertTimestampToDate(comment)
-      })
+        return convertTimestampToDate(comment);
+      });
       const formattedComments = commentDatesFormatted.map((comment) => {
-        //console.log(articlesLookup[comment.article_title])
-      return [articlesLookup[comment.article_title], comment.body, comment.votes, comment.author, comment.created_at]
+        return [
+          articlesLookup[comment.article_title],
+          comment.body,
+          comment.votes,
+          comment.author,
+          comment.created_at,
+        ];
+      });
+      const sqlComments = format(
+        `INSERT INTO comments(article_id, body, votes, author, created_at) VALUES %L`,
+        formattedComments
+      );
+      return db.query(sqlComments);
     });
-    //console.log(formattedComments)
-    const sqlComments = format( `INSERT INTO comments(article_id, body, votes, author, created_at) VALUES %L`, formattedComments);
-    return db.query(sqlComments);
-    })
-  
 };
 
 module.exports = seed;
