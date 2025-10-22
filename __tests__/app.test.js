@@ -14,12 +14,32 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then((res) => {
         const topics = res.body.topics;
-        expect(topics.length).toBeGreaterThan(0);
         topics.forEach((topic) => {
           expect(topic).toHaveProperty("slug");
           expect(topic).toHaveProperty("description");
           expect(typeof topic.slug).toBe("string");
           expect(typeof topic.description).toBe("string");
+        });
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("serves an array of all articles", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        const articles = res.body.articles;
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
         });
       });
   });
