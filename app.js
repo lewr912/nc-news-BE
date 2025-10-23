@@ -15,4 +15,10 @@ app.get("/api/users", getUsers);
 
 app.get("/api/articles/:article_id", getArticleById);
 
+app.use((error, request, response, next) => {
+  if(error.code === "22P02") {
+    response.status(400).send({message: "You have made a bad request"})
+  }
+})
+
 module.exports = app;
