@@ -107,4 +107,20 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("400: Responds with an error message when a request for an articles comments is made with an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/invalid_id/comments")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("You have made a bad request");
+      });
+  })
+  test("404: Responds with an error message when a request for an articles comments is made with a valid article_id that is not present in the database", () => {
+    return request(app)
+    .get("/api/articles/54701/comments")
+    .expect(404)
+    .then(({ body: { message} }) => {
+      expect(message).toBe("Not found");
+    })
+  })
 });
