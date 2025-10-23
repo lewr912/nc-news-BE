@@ -124,3 +124,28 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: Responds with the posted comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Incredibly interesting new comment",
+    };
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toHaveProperty("comment_id", expect.any(Number));
+        expect(comment).toHaveProperty("article_id", 3);
+        expect(comment).toHaveProperty("votes", 0);
+        expect(comment).toHaveProperty("created_at", expect.any(String));
+        expect(comment).toHaveProperty("author", "butter_bridge");
+        expect(comment).toHaveProperty(
+          "body",
+          "Incredibly interesting new comment"
+        );
+        expect(comment).toHaveProperty("article_id", 3);
+      });
+  });
+});
