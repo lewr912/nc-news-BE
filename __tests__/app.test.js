@@ -8,7 +8,7 @@ beforeAll(() => seed(data));
 afterAll(() => db.end());
 
 describe("GET /api/topics", () => {
-  test("200: Serves an array of all topics", () => {
+  test("200: Responds with an array of all topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -22,7 +22,7 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles", () => {
-  test("200: Serves an array of all articles, with added comment_count for each article", () => {
+  test("200: Responds with an array of all articles, with added comment_count for each article", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -43,7 +43,7 @@ describe("GET /api/articles", () => {
 });
 
 describe("GET /api/users", () => {
-  test("200: Serves an array of all users", () => {
+  test("200: Responds with an array of all users", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -58,7 +58,7 @@ describe("GET /api/users", () => {
 });
 
 describe("GET /api/articles/:article_id", () => {
-  test("200: Serves a specific article when passed a valid article_id", () => {
+  test("200: Responds with an article with the requested article_id", () => {
     return request(app)
       .get("/api/articles/4")
       .expect(200)
@@ -73,4 +73,12 @@ describe("GET /api/articles/:article_id", () => {
         expect(article).toHaveProperty("article_img_url", expect.any(String));
       });
   });
+  test("400: Responds with an error message when a request is made for an invalid article_id", () => {
+    return request(app)
+    .get("/api/articles/invalid_id")
+    .expect(400)
+    .then(({body: {message}}) => {
+      expect(message).toBe("You have made a bad request")
+    })
+  })
 });
