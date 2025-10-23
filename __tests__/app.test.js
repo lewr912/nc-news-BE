@@ -12,8 +12,7 @@ describe("GET /api/topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
-      .then((res) => {
-        const topics = res.body.topics;
+      .then(({ body: { topics } }) => {
         topics.forEach((topic) => {
           expect(topic).toHaveProperty("slug", expect.any(String));
           expect(topic).toHaveProperty("description", expect.any(String));
@@ -27,8 +26,7 @@ describe("GET /api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then((res) => {
-        const articles = res.body.articles;
+      .then(({ body: { articles } }) => {
         articles.forEach((article) => {
           expect(article).toHaveProperty("author", expect.any(String));
           expect(article).toHaveProperty("title", expect.any(String));
@@ -49,13 +47,30 @@ describe("GET /api/users", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
-      .then((res) => {
-        const users = res.body.users;
+      .then(({ body: { users } }) => {
         users.forEach((user) => {
           expect(user).toHaveProperty("username", expect.any(String));
           expect(user).toHaveProperty("name", expect.any(String));
           expect(user).toHaveProperty("avatar_url", expect.any(String));
         });
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: Serves a specific article when passed a valid article_id", () => {
+    return request(app)
+      .get("/api/articles/4")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toHaveProperty("author", expect.any(String));
+        expect(article).toHaveProperty("title", expect.any(String));
+        expect(article).toHaveProperty("article_id", 4);
+        expect(article).toHaveProperty("body", expect.any(String));
+        expect(article).toHaveProperty("topic", expect.any(String));
+        expect(article).toHaveProperty("created_at", expect.any(String));
+        expect(article).toHaveProperty("votes", expect.any(Number));
+        expect(article).toHaveProperty("article_img_url", expect.any(String));
       });
   });
 });
