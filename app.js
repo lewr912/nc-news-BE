@@ -4,6 +4,7 @@ const app = express();
 const { getTopics } = require("./controllers/topics.controllers");
 const { getArticles, getArticleById } = require("./controllers/articles.controllers");
 const { getUsers } = require("./controllers/users.controllers");
+const { getCommentsByArticleId } = require("./controllers/comments.controllers");
 
 app.use(express.json());
 
@@ -15,10 +16,21 @@ app.get("/api/users", getUsers);
 
 app.get("/api/articles/:article_id", getArticleById);
 
-app.use((error, request, response, next) => {
-  if(error.code === "22P02") {
-    response.status(400).send({message: "You have made a bad request"})
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.use((err, req, res, next) => {
+  if (err.status && err.message) {
+    res.status(err.status).send({message: err.message})
+  } else {
+    next(err)
   }
 })
+
+app.use((err, req, res, next) => {
+  if(err.code === "22P02") {
+    res.status(400).send({message: "You have made a bad request"})
+  }
+})
+
 
 module.exports = app;

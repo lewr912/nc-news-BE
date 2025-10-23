@@ -75,10 +75,36 @@ describe("GET /api/articles/:article_id", () => {
   });
   test("400: Responds with an error message when a request is made for an invalid article_id", () => {
     return request(app)
-    .get("/api/articles/invalid_id")
-    .expect(400)
-    .then(({body: {message}}) => {
-      expect(message).toBe("You have made a bad request")
-    })
-  })
+      .get("/api/articles/invalid_id")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("You have made a bad request");
+      });
+  });
+  test("404: Responds with an error message when a request is made for an article_id that is valid but not present in the database", () => {
+    return request(app)
+      .get("/api/articles/73058")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Not found");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Responds with an array of all comments for the article matching the requested article_id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id", expect.any(Number));
+          expect(comment).toHaveProperty("votes", expect.any(Number));
+          expect(comment).toHaveProperty("created_at", expect.any(String));
+          expect(comment).toHaveProperty("author", expect.any(String));
+          expect(comment).toHaveProperty("body", expect.any(String));
+          expect(comment).toHaveProperty("article_id", 1);
+        });
+      });
+  });
 });
