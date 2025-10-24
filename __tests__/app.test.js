@@ -194,15 +194,35 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(article).toHaveProperty("article_img_url", expect.any(String));
       });
   });
+  test("400: Responds with an error message when patch request is made with an invalid article_id", () => {
+    const updateVotes = { inc_votes: 7 };
+    return request(app)
+      .patch("/api/articles/hello")
+      .send(updateVotes)
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("You have made a bad request");
+      });
+  });
   test("400: Responds with an error message when patch request is made with invalid data type", () => {
     const updateVotes = { inc_votes: "hello" };
     return request(app)
-    .patch("/api/articles/1")
-    .send(updateVotes)
-    .expect(400)
-    .then(({ body: { message}}) => {
-      expect(message).toBe("You have made a bad request")
-    })
-  })
-  
+      .patch("/api/articles/1")
+      .send(updateVotes)
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("You have made a bad request");
+      });
+  });
+
+  test("404: Responds with an error message when patch request is made to an article that does not exist in the database", () => {
+    const updateVotes = { inc_votes: 3 };
+    return request(app)
+      .patch("/api/articles/34753")
+      .send(updateVotes)
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Not Found");
+      });
+  });
 });
