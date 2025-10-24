@@ -1,4 +1,8 @@
 const {
+  fetchArticleById,
+  checkArticleExists,
+} = require("../models/articles.models");
+const {
   fetchCommentsByArticleId,
   postNewComment,
 } = require("../models/comments.models");
@@ -10,10 +14,12 @@ exports.getCommentsByArticleId = (request, response) => {
   });
 };
 
-exports.respondNewPost = (request, response) => {
+exports.addCommentToArticle = (request, response) => {
   const { article_id } = request.params;
   const newComment = request.body;
-  return postNewComment(article_id, newComment).then((comment) => {
-    response.status(201).send({ comment: comment });
+  return checkArticleExists(article_id).then(() => {
+    return postNewComment(article_id, newComment).then((comment) => {
+      response.status(201).send({ comment: comment });
+    });
   });
 };

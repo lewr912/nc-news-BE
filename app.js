@@ -9,7 +9,7 @@ const {
 const { getUsers } = require("./controllers/users.controllers");
 const {
   getCommentsByArticleId,
-  respondNewPost,
+  addCommentToArticle,
 } = require("./controllers/comments.controllers");
 
 app.use(express.json());
@@ -24,7 +24,7 @@ app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
-app.post("/api/articles/:article_id/comments", respondNewPost);
+app.post("/api/articles/:article_id/comments", addCommentToArticle);
 
 app.use((err, req, res, next) => {
   if (err.status && err.message) {

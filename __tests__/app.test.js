@@ -126,7 +126,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 });
 
 describe("POST /api/articles/:article_id/comments", () => {
-  test("201: Responds with the posted comment", () => {
+  test("201: Responds with the posted comment when post request is successful on the article matching the article_id", () => {
     const newComment = {
       username: "butter_bridge",
       body: "Incredibly interesting new comment",
@@ -146,6 +146,32 @@ describe("POST /api/articles/:article_id/comments", () => {
           "Incredibly interesting new comment"
         );
         expect(comment).toHaveProperty("article_id", 3);
+      });
+  });
+  test("400: Responds with an error message when post request for a new comment is made with an invalid article_id", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Incredibly interesting comment number two",
+    };
+    return request(app)
+      .post("/api/articles/invalid_id/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("You have made a bad request");
+      });
+  });
+  test("Responds with an error message when post request for a new comment is made with a valid article_id that is not available in the database", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Incredibly interesting comment number three",
+    };
+    return request(app)
+      .post("/api/articles/47832/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Not Found");
       });
   });
 });
