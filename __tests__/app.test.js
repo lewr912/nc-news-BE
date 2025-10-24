@@ -161,7 +161,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(message).toBe("You have made a bad request");
       });
   });
-  test("Responds with an error message when post request for a new comment is made with a valid article_id that is not available in the database", () => {
+  test("404: Responds with an error message when post request for a new comment is made with a valid article_id that is not available in the database", () => {
     const newComment = {
       username: "butter_bridge",
       body: "Incredibly interesting comment number three",
@@ -172,6 +172,26 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body: { message } }) => {
         expect(message).toBe("Not Found");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: Responds with the requested article with updated vote count", () => {
+    const updateVotes = { inc_votes: 9 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateVotes)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toHaveProperty("author", expect.any(String));
+        expect(article).toHaveProperty("title", expect.any(String));
+        expect(article).toHaveProperty("article_id", 1);
+        expect(article).toHaveProperty("body", expect.any(String));
+        expect(article).toHaveProperty("topic", expect.any(String));
+        expect(article).toHaveProperty("created_at", expect.any(String));
+        expect(article).toHaveProperty("votes", expect.any(Number));
+        expect(article).toHaveProperty("article_img_url", expect.any(String));
       });
   });
 });
