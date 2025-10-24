@@ -1,10 +1,10 @@
 const {
-  fetchArticleById,
   checkArticleExists,
 } = require("../models/articles.models");
 const {
   fetchCommentsByArticleId,
   postNewComment,
+  removeCommentById,
 } = require("../models/comments.models");
 
 exports.getCommentsByArticleId = (request, response) => {
@@ -23,3 +23,11 @@ exports.addCommentToArticle = (request, response) => {
     });
   });
 };
+
+exports.deleteComment = (request, response) => {
+  const { comment_id } = request.params;
+  return removeCommentById(comment_id).then(() => {
+    response.status(204).send()
+  })
+  
+}

@@ -226,3 +226,27 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: Responds with status 204 and no content when comment is deleted", () => {
+    return request(app)
+    .delete("/api/comments/6")
+    .expect(204)
+  })
+  test("400: Responds with error message when delete request is made with invalid comment_id", () => {
+    return request(app)
+    .delete("/api/comments/hello")
+    .expect(400)
+    .then(({ body: {message}}) => {
+      expect(message).toBe("You have made a bad request")
+    })
+  })
+  test("404: Responds with error message when delete request is made with valid comment_id that does not exist in the database", () => {
+    return request(app)
+    .delete("/api/comments/25427")
+    .expect(404)
+    .then(({ body: { message }}) => {
+      expect(message).toBe("Not Found")
+    })
+  })
+})

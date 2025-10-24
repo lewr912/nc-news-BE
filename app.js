@@ -11,6 +11,7 @@ const { getUsers } = require("./controllers/users.controllers");
 const {
   getCommentsByArticleId,
   addCommentToArticle,
+  deleteComment
 } = require("./controllers/comments.controllers");
 
 app.use(express.json());
@@ -29,6 +30,8 @@ app.post("/api/articles/:article_id/comments", addCommentToArticle);
 
 app.patch("/api/articles/:article_id", patchArticle);
 
+app.delete("/api/comments/:comment_id", deleteComment);
+
 app.use((err, req, res, next) => {
   if (err.status && err.message) {
     res.status(err.status).send({ message: err.message });
@@ -40,7 +43,7 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ message: "You have made a bad request" });
-  }
+  } 
 });
 
 module.exports = app;
