@@ -40,7 +40,7 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("Sorting Queries Descending by default", () => {
+  test("200: Sorting Queries Descending by default", () => {
     const sortingColumns = [
       "author",
       "title",
@@ -54,9 +54,10 @@ describe("GET /api/articles", () => {
     sortingColumns.forEach((column) => {
       return request(app)
         .get("/api/articles")
-        .query({ sort_by: column})
+        .expect(200)
+        .query({ sort_by: column })
         .then(({ body: { articles } }) => {
-          expect(articles).toBeSortedBy(column, {descending: true});
+          expect(articles).toBeSortedBy(column, { descending: true });
         });
     });
   });
@@ -74,11 +75,67 @@ describe("GET /api/articles", () => {
     sortingColumns.forEach((column) => {
       return request(app)
         .get("/api/articles")
-        .query({ sort_by: column, order: "ASC"})
+        .expect(200)
+        .query({ sort_by: column, order: "ASC" })
         .then(({ body: { articles } }) => {
-          expect(articles).toBeSortedBy(column, {ascending: true});
+          expect(articles).toBeSortedBy(column, { ascending: true });
         });
     });
+  });
+  test("400: Responds with an error message when an invalid column is provided as sort query", () => {
+    return request(app)
+      .get("/api/articles")
+      .query({ sort_by: "not_a_column" })
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request, Invalid sort query");
+      });
+  });
+  test("400: Responds with an error message when an invalid order query is provided", () => {
+    return request(app)
+      .get("/api/articles")
+      .query({ sort_by: "votes", order: "15234" })
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad request, Invalid sort query");
+      });
+  });
+  test("200: Query filter by topic", () => {
+    return request(app)
+      .get("/api/articles")
+      .query({ topic: "cats" })
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("author", expect.any(String));
+          expect(article).toHaveProperty("title", expect.any(String));
+          expect(article).toHaveProperty("article_id", expect.any(Number));
+          expect(article.topic).toBe("cats");
+          expect(article).toHaveProperty("created_at", expect.any(String));
+          expect(article).toHaveProperty("votes", expect.any(Number));
+          expect(article).toHaveProperty("article_img_url", expect.any(String));
+          expect(article).toHaveProperty("comment_count", expect.any(Number));
+          expect(article).not.toHaveProperty("body");
+        });
+      });
+  });
+  test("404: Responds with an error message when query topic exists in the database but has no associated articles", () => {
+    return request(app)
+      .get("/api/articles")
+      .query({ topic: "paper" })
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("This topic has no associated articles")
+      });
+  });
+  test("404: Responds with an error message when query contains a topic that does not exist in the database", () => {
+    return request(app)
+      .get("/api/articles")
+      .query({ topic: "pape" })
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Not Found")
+      });
   });
 });
 

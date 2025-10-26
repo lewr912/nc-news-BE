@@ -4,10 +4,18 @@ const {
   fetchPatchedArticle,
   checkArticleExists,
 } = require("../models/articles.models");
+const { checkTopicExists } = require("../models/topics.models");
 
 exports.getArticles = (request, response) => {
-  return fetchArticles(request.query).then((rows) => {
-    response.status(200).send({ articles: rows });
+  const { topic } = request.query;
+  const promises = [fetchArticles(request.query)]
+  if(topic){
+    promises.push(checkTopicExists(topic))
+  }
+  return Promise.all(promises).then(() => {
+    return fetchArticles(request.query).then((rows) => {
+      response.status(200).send({ articles: rows });
+    });
   });
 };
 
