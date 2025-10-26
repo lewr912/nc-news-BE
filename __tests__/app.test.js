@@ -40,6 +40,46 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  test("Sorting Queries Descending by default", () => {
+    const sortingColumns = [
+      "author",
+      "title",
+      "article_id",
+      "topic",
+      "created_at",
+      "votes",
+      "article_img_url",
+      "comment_count",
+    ];
+    sortingColumns.forEach((column) => {
+      return request(app)
+        .get("/api/articles")
+        .query({ sort_by: column})
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy(column, {descending: true});
+        });
+    });
+  });
+  test("Sorting Queries Ascending", () => {
+    const sortingColumns = [
+      "author",
+      "title",
+      "article_id",
+      "topic",
+      "created_at",
+      "votes",
+      "article_img_url",
+      "comment_count",
+    ];
+    sortingColumns.forEach((column) => {
+      return request(app)
+        .get("/api/articles")
+        .query({ sort_by: column, order: "ASC"})
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy(column, {ascending: true});
+        });
+    });
+  });
 });
 
 describe("GET /api/users", () => {
@@ -229,24 +269,22 @@ describe("PATCH /api/articles/:article_id", () => {
 
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: Responds with status 204 and no content when comment is deleted", () => {
-    return request(app)
-    .delete("/api/comments/6")
-    .expect(204)
-  })
+    return request(app).delete("/api/comments/6").expect(204);
+  });
   test("400: Responds with error message when delete request is made with invalid comment_id", () => {
     return request(app)
-    .delete("/api/comments/hello")
-    .expect(400)
-    .then(({ body: {message}}) => {
-      expect(message).toBe("You have made a bad request")
-    })
-  })
+      .delete("/api/comments/hello")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("You have made a bad request");
+      });
+  });
   test("404: Responds with error message when delete request is made with valid comment_id that does not exist in the database", () => {
     return request(app)
-    .delete("/api/comments/25427")
-    .expect(404)
-    .then(({ body: { message }}) => {
-      expect(message).toBe("Not Found")
-    })
-  })
-})
+      .delete("/api/comments/25427")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Not Found");
+      });
+  });
+});
