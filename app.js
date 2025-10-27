@@ -16,7 +16,7 @@ const { healthCheck } = require("./controllers/healthcheck.controller");
 
 app.use(express.json());
 
-app.get("/", healthCheck)
+app.get(["/", "/api"], healthCheck)
 
 app.get("/api/topics", getTopics);
 
