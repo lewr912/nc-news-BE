@@ -12,8 +12,11 @@ const {
   addCommentToArticle,
   deleteComment
 } = require("./controllers/comments.controllers");
+const { healthCheck } = require("./controllers/healthcheck.controller");
 
 app.use(express.json());
+
+app.get("/", healthCheck)
 
 app.get("/api/topics", getTopics);
 

@@ -7,6 +7,17 @@ const app = require("../app.js");
 beforeEach(() => {return seed(data)});
 afterAll(() => {return db.end()});
 
+describe("GET /, server healthcheck", () => {
+  test("200: Responds with server healthy message when connection is successful", () => {
+    return request(app)
+    .get("/")
+    .expect(200)
+    .then(({ body: { message } }) => {
+      expect(message).toBe("Server is healthy")
+    })
+  })
+})
+
 describe("GET /api/topics", () => {
   test("200: Responds with an array of all topics", () => {
     return request(app)
