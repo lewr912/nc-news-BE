@@ -31,6 +31,10 @@ app.patch("/api/articles/:article_id", patchArticle);
 
 app.delete("/api/comments/:comment_id", deleteComment);
 
+app.use((req, res) => {
+  res.status(404).send({ message: "Path not found" })
+})
+
 
 app.use((err, req, res, next) => {
   if (err.status && err.message) {
