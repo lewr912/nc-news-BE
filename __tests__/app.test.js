@@ -1,11 +1,11 @@
 const request = require("supertest");
-const db = require("../db/connection");
+const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed");
-const data = require("../db/data/test-data");
-const app = require("../app");
+const data = require("../db/data/test-data/index.js");
+const app = require("../app.js");
 
-beforeAll(() => seed(data));
-afterAll(() => db.end());
+beforeEach(() => {return seed(data)});
+afterAll(() => {return db.end()});
 
 describe("GET /api/topics", () => {
   test("200: Responds with an array of all topics", () => {
@@ -51,15 +51,15 @@ describe("GET /api/articles", () => {
       "article_img_url",
       "comment_count",
     ];
-    sortingColumns.forEach((column) => {
+    return Promise.all(sortingColumns.map((column) => {
       return request(app)
         .get("/api/articles")
-        .expect(200)
         .query({ sort_by: column })
+        .expect(200)
         .then(({ body: { articles } }) => {
           expect(articles).toBeSortedBy(column, { descending: true });
         });
-    });
+    }));
   });
   test("Sorting Queries Ascending", () => {
     const sortingColumns = [
@@ -72,15 +72,15 @@ describe("GET /api/articles", () => {
       "article_img_url",
       "comment_count",
     ];
-    sortingColumns.forEach((column) => {
+    return Promise.all(sortingColumns.map((column) => {
       return request(app)
         .get("/api/articles")
-        .expect(200)
         .query({ sort_by: column, order: "ASC" })
+        .expect(200)
         .then(({ body: { articles } }) => {
           expect(articles).toBeSortedBy(column, { ascending: true });
         });
-    });
+    }));
   });
   test("400: Responds with an error message when an invalid column is provided as sort query", () => {
     return request(app)
@@ -119,19 +119,19 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("404: Responds with an error message when query topic exists in the database but has no associated articles", () => {
+  test("200: Responds with an empty array when query topic exists in the database but has no associated articles", () => {
     return request(app)
       .get("/api/articles")
       .query({ topic: "paper" })
-      .expect(404)
-      .then(({ body: { message } }) => {
-        expect(message).toBe("This topic has no associated articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(0)
       });
   });
   test("404: Responds with an error message when query contains a topic that does not exist in the database", () => {
     return request(app)
       .get("/api/articles")
-      .query({ topic: "pape" })
+      .query({ topic: "pap" })
       .expect(404)
       .then(({ body: { message } }) => {
         expect(message).toBe("Not Found")
@@ -186,6 +186,22 @@ describe("GET /api/articles/:article_id", () => {
         expect(message).toBe("Not Found");
       });
   });
+  test("200: Requested article contains added comment_count property with a correct value of comments containing the requested article_id", () => {
+    return request(app)
+      .get("/api/articles/5")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article.author).toBe("rogersop")
+        expect(article.title).toBe("UNCOVERED: catspiracy to bring down democracy")
+        expect(article.article_id).toBe(5)
+        expect(article.body).toBe("Bastet walks amongst us, and the cats are taking arms!")
+        expect(article.topic).toBe("cats")
+        expect(article.created_at).toBe("2020-08-03T13:14:00.000Z")
+        expect(article.votes).toBe(0)
+        expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+        expect(article.comment_count).toBe(2)
+      });
+  })
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
