@@ -1,5 +1,4 @@
 const express = require("express");
-const db = require("./db/connection");
 const app = express();
 const { getTopics } = require("./controllers/topics.controllers");
 const {
