@@ -9,11 +9,11 @@ const { checkTopicExists } = require("../models/topics.models");
 exports.getArticles = (request, response) => {
   const { topic } = request.query;
 
-  const promises = [fetchArticles(request.query)]
+  const reqPromises = [fetchArticles(request.query)]
 
-  if(topic) {promises.push(checkTopicExists(topic))}
+  if(topic) {reqPromises.push(checkTopicExists(topic))}
   
-      return Promise.all(promises).then((results) => {
+      return Promise.all(reqPromises).then((results) => {
         response.status(200).send({ articles: results[0] });
       
     });
