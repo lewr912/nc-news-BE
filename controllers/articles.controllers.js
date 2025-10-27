@@ -8,15 +8,16 @@ const { checkTopicExists } = require("../models/topics.models");
 
 exports.getArticles = (request, response) => {
   const { topic } = request.query;
+
   const promises = [fetchArticles(request.query)]
-  if(topic){
-    promises.push(checkTopicExists(topic))
-  }
-  return Promise.all(promises).then(() => {
-    return fetchArticles(request.query).then((rows) => {
-      response.status(200).send({ articles: rows });
+
+  if(topic) {promises.push(checkTopicExists(topic))}
+  
+      return Promise.all(promises).then((results) => {
+        response.status(200).send({ articles: results[0] });
+      
     });
-  });
+
 };
 
 exports.getArticleById = (request, response) => {

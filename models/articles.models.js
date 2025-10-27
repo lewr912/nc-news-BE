@@ -36,18 +36,15 @@ exports.fetchArticles = ({ sort_by = "created_at", order = "DESC", topic }) => {
     queryValues.push(topic);
   }
   queryString += ` GROUP BY articles.article_id 
-      ORDER BY ${sort_by} ${order}`;
-  return db.query(queryString, queryValues).then(({ rows, rowCount }) => {
-    if(rowCount === 0) {
-      return Promise.reject({ status: 404, message: "This topic has no associated articles"})
-    }
+      ORDER BY ${sort_by} ${order};`;
+  return db.query(queryString, queryValues).then(({ rows }) => {
     return rows;
   });
 };
 
 exports.fetchArticleById = (article_id) => {
   return db
-    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .query(`SELECT articles.*, COUNT(comments.article_id)::INT AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id`, [article_id])
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, message: "Not Found" });
@@ -63,7 +60,6 @@ exports.checkArticleExists = (article_id) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, message: "Not Found" });
       }
-      return rows;
     });
 };
 
