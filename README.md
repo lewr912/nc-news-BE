@@ -14,29 +14,30 @@ Hosted version here: https://newsit-xcqx.onrender.com/api/
 ### Getting Started
 
 **Clone the Repository**
+```
+git clone https://github.com/lewr912/nc-news-BE.git
 
-- git clone https://github.com/lewr912/nc-news-BE.git
-
-- cd nc-news-BE
-
+cd nc-news-BE
+```
 **Install Dependencies**
-
-- npm install
-
+```
+npm install
+```
 **Create Environment Variables**
 
 Create two new .env files in the root level of this repo and set the environment variables with the correct database names to connect to each database.
 
-- .env.test - Which uses the test database - PGDATABASE=database_name_here
-- .env.development - Which uses the development database - PGDATABASE=database_name_here
+- .env.test - Which uses the test database - ```PGDATABASE=database_name_here```
+- .env.development - Which uses the development database - ```PGDATABASE=database_name_here```
 
 > Note: Please refer to db/setup-dbs.sql for the correct database names.
 
 **Create and seed the databases**
-
-- npm run setup-dbs
-- npm run seed
-
+```
+npm run setup-dbs
+npm run seed
+```
 **To run tests**
-
-- npm test
+```
+npm test
+```
