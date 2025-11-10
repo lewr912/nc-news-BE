@@ -73,3 +73,19 @@ exports.fetchPatchedArticle = (article_id, inc_votes) => {
       return rows[0];
     });
 };
+
+exports.postNewArticle = (newArticle) => {
+  const { author, title, body, topic, article_img_url } = newArticle;
+  if (!article_img_url){
+    article_img_url = "https://cdn.pixabay.com/photo/2016/02/07/14/45/smartphone-1184883_1280.png"
+  }
+  return db
+    .query(
+      `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
+      [author, title, body, topic, article_img_url]
+    )
+    .then(({ rows }) => {
+      rows[0].comment_count = 0;
+      return rows[0];
+    });
+};

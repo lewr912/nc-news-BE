@@ -4,19 +4,23 @@ const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index.js");
 const app = require("../app.js");
 
-beforeEach(() => {return seed(data)});
-afterAll(() => {return db.end()});
+beforeEach(() => {
+  return seed(data);
+});
+afterAll(() => {
+  return db.end();
+});
 
 describe("GET /, server healthcheck", () => {
   test("200: Responds with server healthy message when connection is successful", () => {
     return request(app)
-    .get("/")
-    .expect(200)
-    .then(({ body: { message } }) => {
-      expect(message).toBe("Server is healthy")
-    })
-  })
-})
+      .get("/")
+      .expect(200)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Server is healthy");
+      });
+  });
+});
 
 describe("GET /api/topics", () => {
   test("200: Responds with an array of all topics", () => {
@@ -62,15 +66,17 @@ describe("GET /api/articles", () => {
       "article_img_url",
       "comment_count",
     ];
-    return Promise.all(sortingColumns.map((column) => {
-      return request(app)
-        .get("/api/articles")
-        .query({ sort_by: column })
-        .expect(200)
-        .then(({ body: { articles } }) => {
-          expect(articles).toBeSortedBy(column, { descending: true });
-        });
-    }));
+    return Promise.all(
+      sortingColumns.map((column) => {
+        return request(app)
+          .get("/api/articles")
+          .query({ sort_by: column })
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).toBeSortedBy(column, { descending: true });
+          });
+      })
+    );
   });
   test("Sorting Queries Ascending", () => {
     const sortingColumns = [
@@ -83,15 +89,17 @@ describe("GET /api/articles", () => {
       "article_img_url",
       "comment_count",
     ];
-    return Promise.all(sortingColumns.map((column) => {
-      return request(app)
-        .get("/api/articles")
-        .query({ sort_by: column, order: "ASC" })
-        .expect(200)
-        .then(({ body: { articles } }) => {
-          expect(articles).toBeSortedBy(column, { ascending: true });
-        });
-    }));
+    return Promise.all(
+      sortingColumns.map((column) => {
+        return request(app)
+          .get("/api/articles")
+          .query({ sort_by: column, order: "ASC" })
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).toBeSortedBy(column, { ascending: true });
+          });
+      })
+    );
   });
   test("400: Responds with an error message when an invalid column is provided as sort query", () => {
     return request(app)
@@ -136,7 +144,7 @@ describe("GET /api/articles", () => {
       .query({ topic: "paper" })
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles.length).toBe(0)
+        expect(articles.length).toBe(0);
       });
   });
   test("404: Responds with an error message when query contains a topic that does not exist in the database", () => {
@@ -145,7 +153,7 @@ describe("GET /api/articles", () => {
       .query({ topic: "pap" })
       .expect(404)
       .then(({ body: { message } }) => {
-        expect(message).toBe("Not Found")
+        expect(message).toBe("Not Found");
       });
   });
 });
@@ -202,17 +210,23 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/5")
       .expect(200)
       .then(({ body: { article } }) => {
-        expect(article.author).toBe("rogersop")
-        expect(article.title).toBe("UNCOVERED: catspiracy to bring down democracy")
-        expect(article.article_id).toBe(5)
-        expect(article.body).toBe("Bastet walks amongst us, and the cats are taking arms!")
-        expect(article.topic).toBe("cats")
-        expect(article.created_at).toBe("2020-08-03T13:14:00.000Z")
-        expect(article.votes).toBe(0)
-        expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
-        expect(article.comment_count).toBe(2)
+        expect(article.author).toBe("rogersop");
+        expect(article.title).toBe(
+          "UNCOVERED: catspiracy to bring down democracy"
+        );
+        expect(article.article_id).toBe(5);
+        expect(article.body).toBe(
+          "Bastet walks amongst us, and the cats are taking arms!"
+        );
+        expect(article.topic).toBe("cats");
+        expect(article.created_at).toBe("2020-08-03T13:14:00.000Z");
+        expect(article.votes).toBe(0);
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+        expect(article.comment_count).toBe(2);
       });
-  })
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -369,6 +383,40 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(404)
       .then(({ body: { message } }) => {
         expect(message).toBe("Not Found");
+      });
+  });
+});
+
+describe("POST /api/articles", () => {
+  test("201: Responds with the posted article when post request is successful", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "Cool new article",
+      body: "Isn't paper great, What's your favourite kind of paper?",
+      topic: "paper",
+      article_img_url:
+        "https://images.stockcake.com/public/b/7/b/b7b8ac23-8f72-4b2f-a3ad-4909e229aba4_large/crumpled-paper-texture-stockcake.jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toHaveProperty("author", "butter_bridge");
+        expect(article).toHaveProperty("title", "Cool new article");
+        expect(article).toHaveProperty(
+          "body",
+          "Isn't paper great, What's your favourite kind of paper?"
+        );
+        expect(article).toHaveProperty("topic", "paper");
+        expect(article).toHaveProperty(
+          "article_img_url",
+          "https://images.stockcake.com/public/b/7/b/b7b8ac23-8f72-4b2f-a3ad-4909e229aba4_large/crumpled-paper-texture-stockcake.jpg"
+        );
+        expect(article).toHaveProperty("article_id", expect.any(Number));
+        expect(article).toHaveProperty("votes", 0);
+        expect(article).toHaveProperty("created_at", expect.any(String));
+        expect(article).toHaveProperty("comment_count", 0);
       });
   });
 });

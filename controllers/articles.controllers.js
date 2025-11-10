@@ -3,6 +3,7 @@ const {
   fetchArticleById,
   fetchPatchedArticle,
   checkArticleExists,
+  postNewArticle,
 } = require("../models/articles.models");
 const { checkTopicExists } = require("../models/topics.models");
 
@@ -33,6 +34,15 @@ exports.patchArticle = (request, response) => {
   return checkArticleExists(article_id).then(() => {
     return fetchPatchedArticle(article_id, inc_votes).then((article) => {
       response.status(200).send({ article: article });
+    });
+  });
+};
+
+exports.addArticle = (request, response) => {
+   const newArticle = request.body;
+  return checkTopicExists(newArticle.topic).then(() => {
+    return postNewArticle(newArticle).then((article) => {
+      response.status(201).send({ article: article });
     });
   });
 };
