@@ -5,6 +5,7 @@ const {
   getArticles,
   getArticleById,
   patchArticle,
+  addArticle,
 } = require("./controllers/articles.controllers");
 const { getUsers } = require("./controllers/users.controllers");
 const {
@@ -16,7 +17,9 @@ const { healthCheck } = require("./controllers/healthcheck.controller");
 
 app.use(express.json());
 
-app.get(["/", "/api"], healthCheck)
+app.use("/api", express.static("public"))
+
+app.get("/", healthCheck)
 
 app.get("/api/topics", getTopics);
 
@@ -29,6 +32,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", addCommentToArticle);
+
+app.post("/api/articles", addArticle)
 
 app.patch("/api/articles/:article_id", patchArticle);
 
