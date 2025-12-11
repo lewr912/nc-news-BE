@@ -45,8 +45,8 @@ describe('seed', () => {
             ON tc.constraint_name = kcu.constraint_name
             WHERE tc.constraint_type = 'PRIMARY KEY'
             AND tc.table_name = 'topics';`
-        )
-        .then(({ rows: [{ column_name }] }) => {
+          )
+            .then(({ rows: [{ column_name }] }) => {
           expect(column_name).toBe('slug');
         });
     });

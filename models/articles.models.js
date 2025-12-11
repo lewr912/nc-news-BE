@@ -18,7 +18,7 @@ exports.fetchArticles = ({ sort_by = "created_at", order = "DESC", topic }) => {
       message: "Bad request, Invalid sort query",
     });
   }
-
+  
   let queryString = `SELECT 
         articles.author, 
         articles.title, 
