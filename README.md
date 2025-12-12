@@ -4,6 +4,8 @@ Hosted version here: https://newsit-xcqx.onrender.com
 
 > Note: Please find the list of valid endpoints below
 
+---
+
 ### Project Summary
 
 A RESTful API for a Reddit style news system. Users can browse different topics and articles, as well as posting comments on articles.
@@ -26,6 +28,7 @@ Check your current versions with:
 ### Getting Started
 
 **Clone the Repository**
+
 ```
 git clone https://github.com/lewr912/nc-news-BE.git
 
@@ -53,8 +56,8 @@ Create two new .env files in the root level of this repo and set the environment
 
 ---
 
-
 **Create and seed the databases**
+
 ```
 npm run setup-dbs
 npm run seed
@@ -80,14 +83,13 @@ Enter this command to run this project locally, the server will listen on port 9
 
 ### Valid endpoints
 
-| Method | Endpoint | Description |
-|-|-|-|
-| GET | /api/users | Responds with a list of all users |
-| GET | /api/topics | Responds with a list of all topics |
-| GET | /api/articles | Responds with a list of all articles |
-| GET | /api/articles/:article_id | Responds with a single article by article_id |
-| PATCH | /api/articles/:article_id | Updates the vote count on an article |
-| GET | /api/articles/:article_id/comments | Responds with a list of all comments for an article |
-| POST | /api/articles/:article_id/comments | Adds a new comment to an article |
-| DELETE | /api/comments/:comment_id | Deletes a comment by comment_id |
-
+| Method | Endpoint                           | Description                                         |
+| ------ | ---------------------------------- | --------------------------------------------------- |
+| GET    | /api/users                         | Responds with a list of all users                   |
+| GET    | /api/topics                        | Responds with a list of all topics                  |
+| GET    | /api/articles                      | Responds with a list of all articles                |
+| GET    | /api/articles/:article_id          | Responds with a single article by article_id        |
+| PATCH  | /api/articles/:article_id          | Updates the vote count on an article                |
+| GET    | /api/articles/:article_id/comments | Responds with a list of all comments for an article |
+| POST   | /api/articles/:article_id/comments | Adds a new comment to an article                    |
+| DELETE | /api/comments/:comment_id          | Deletes a comment by comment_id                     |
